@@ -1,16 +1,25 @@
 Parameters:
   OfficeIp:
     Type: String
-    Default: 65.158.195.26/32
+    Default: 0.0.0.0/0
     Description: Enter the CIDR for the office IP
+  VpcId:
+    Type: AWS::EC2::VPC::Id
+    Description: VpcID in which you wish to deploy the EKS cluster
+  ClusterName:
+    Type: String
+    Description: Name of your EKS Cluster
+  Subnets:
+    Type: "List<AWS::EC2::SecurityGroup::Id>"
+    Description: List of subnets to use in your cluster
 
 Resources:
   ControlPlaneSecurityGroup:
     Type: "AWS::EC2::SecurityGroup"
     Properties:
-      VpcId: vpc-d85491a0
-      GroupName: eks-cluster-sg
-      GroupDescription: Allow Traffic from Office/VPN
+      VpcId: !Ref VpcId
+      GroupName: eks-control-plane-sg
+      GroupDescription: Control Plane Security Group
       SecurityGroupIngress:
       - IpProtocol: -1
         CidrIp: !Ref OfficeIp
@@ -21,17 +30,17 @@ Resources:
   EksCluster:
     Type: "AWS::EKS::Cluster"
     Properties:
-      Name: "hackathon"
+      Name: !Ref ClusterName
       Version: "1.10"
-      RoleArn: "arn:aws:iam::001764686859:role/EKSServiceRole"
+      RoleArn: !GetAtt EKSServiceRole.Arn
       ResourcesVpcConfig:
         SecurityGroupIds: [!GetAtt ControlPlaneSecurityGroup.GroupId]
-        SubnetIds: ["subnet-62364529", "subnet-3a683e43", "subnet-f7be9fad", "subnet-7c334037", "subnet-f495c38d", "subnet-93b697c9"]
+        SubnetIds: [!Ref Subnets]
 
   IngressSecurityGroup:
     Type: "AWS::EC2::SecurityGroup"
     Properties:
-      VpcId: vpc-d85491a0
+      VpcId: !Ref VpcId
       GroupName: alb-ingress-sg
       GroupDescription: Allow Traffic from Office/VPN
       SecurityGroupIngress:
@@ -40,6 +49,32 @@ Resources:
       SecurityGroupEgress:
       - IpProtocol: -1
         CidrIp: 0.0.0.0/0
+
+  EKSServiceRole:
+    Type: AWS::IAM::Role
+    Properties:
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AmazonEKSClusterPolicy
+        - arn:aws:iam::aws:policy/AmazonEKSServicePolicy
+      RoleName: EKSServiceRole
+
+  ServiceLinkedRolePolicy:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyDocument: {
+        "Version": "2012-10-17",
+        "Statement": [
+          {
+            "Sid": "VisualEditor0",
+            "Effect": "Allow",
+            "Action": "iam:CreateServiceLinkedRole",
+            "Resource": "arn:aws:iam::001764686859:role/aws-service-role/elasticloadbalancing.amazonaws.com/AWSServiceRoleForElasticLoadBalancing"
+          }
+        ]
+      }
+      PolicyName: CreateServiceLinkedRole-k8s
+      Roles:
+        - EKSServiceRole
 
 Outputs:
   AlbIngressSecurityGroupId:

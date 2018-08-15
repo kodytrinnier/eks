@@ -1,29 +1,42 @@
 AWSTemplateFormatVersion: 2010-09-09
-Description: This template creates a bastion
+Description: This template creates a bastion & Security Group
 Parameters:
   OfficeIp:
     Type: String
     Description: Enter the CIDR for the office IP
+  VpcId:
+    Type: String
+    Description: VpcID you want to deploy bastion in
+  KeyPair:
+    Type: String
+    Description: SSH Key Pair to access bastion
+  AMI:
+    Type: String
+    Description: AMI to use for bastion
+    Default: ami-a9d09ed1
+  SubnetId:
+    Type: String
+    Decription: Subnet to deploy bastion in
 Resources:
   Ec2Instance:
     Type: "AWS::EC2::Instance"
     Properties:
-      ImageId: ami-a9d09ed1
+      ImageId: !Ref AMI
       InstanceType: t2.micro
-      KeyName: "hackathon-k8s"
+      KeyName: !Ref KeyPair
       NetworkInterfaces:
         - AssociatePublicIpAddress: "true"
           DeviceIndex: "0"
           GroupSet:
           - !Ref BastionSecurityGroup
-          SubnetId: subnet-7c334037
+          SubnetId: !Ref SubnetId
       Tags:
         - Key: Name
-          Value: HackathonK8s-Bastion
+          Value: Value
   BastionSecurityGroup:
     Type: "AWS::EC2::SecurityGroup"
     Properties:
-      VpcId: vpc-d85491a0
+      VpcId: !Ref VpcId
       GroupName: Bastion-SG
       GroupDescription: Allow SSH from Office/VPN
       SecurityGroupIngress:
