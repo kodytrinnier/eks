@@ -114,4 +114,4 @@ spec:
   selector:
     app: guestbook
   type: LoadBalancer
-  loadBalancerSourceRanges: [ 65.158.195.26/32 ]
+  loadBalancerSourceRanges: [ REDACTED ]
