@@ -2,37 +2,9 @@
 cloud_final_modules:
 - [users-groups,always]
 users:
-  - name: marc.wensauer
-    groups: [ wheel ]
-    sudo: [ "ALL=(ALL) NOPASSWD:ALL" ]
-    shell: /bin/bash
-    ssh-authorized-keys: 
-    - "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDhMzIxIU0YT3vMx/wGpJlFsC6I3p5r4rSiKvNbJcZuoBJ1ZymdVsI6gKfaSt8mwxudxYQM5ZXDV2BqGI8mx8YmC0wDtY/YyYoWbLZbptN5TYVdqLiNSOxknx4cxrC0pGDqG8r5tAl9XQplwLjzL4BH6TmUFyXYLVRICcI616pKj/eCmmGHvfUQuCnGidDAW1K2Yl2Nj/s3b+Xwe614sBA5k5Martk0lxB+RErckE4xQo2GGuUQMNTBka+a57iYyfzSHUjrJ+sA9aDn4nfJjfllELPifz0nCtTB1NgU/NdiBOK7xR4Z5GENp0MO8ynveUhQawXu0WX/a4FJMRw9iqbD marc.wensauer@machete"
-
   - name: kody.trinnier
     groups: [ wheel ]
     sudo: [ "ALL=(ALL) NOPASSWD:ALL" ]
     shell: /bin/bash
     ssh-authorized-keys:
     - "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDNucuZO3lOpC7ZmEsdyYF54PzTHvNNeA1SxbppNogkDqN0F3bgx9omHxEBGf9rdmBDeI2Jw3J/WUSvvhetcOGpVh5yONGh9ZyrPRMciO6N9CElZAior6gUyWHookBLzWSG4aoZPg7SOQXzVf76llazKgt8tFPe/3roNKRFk5ntqW0yNTvgPzrRBwJIn59OzFzv29dx7v/uElP0GKHVRTkYuyApAp0KfJUGAUDV2Erwb4UOU+/2szOkBZK3RTbT/ctnAVpYRirdYh/sq0otwAeWqNytEGxmGHK2xgmiYqHRevwqmTJ5yX+P8W1OCoBABwI9CPLKXAdgV8XfPJto+eU/ kody.trinnier@1360-MBP.local"
-
-  - name: andrew.lamb
-    groups: [ wheel ]
-    sudo: [ "ALL=(ALL) NOPASSWD:ALL" ]
-    shell: /bin/bash
-    ssh-authorized-keys:
-    - "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDEb7x2C0tcXpqczwyhUKaufnKPSIhXU5yzi1SH2g5k+ix3cmnRpCxPvqkZwuwSspG9i8k8fT+tvwEYF984HptXfR9gI7Cn7TCg1EnPg56bitIaXOOXF4j6r617LJ4QJmp4t7BGH9gXy3LGCIv0xt7qLh4ZMI6GCnm4Aj3aKx+C3ZR4DYUgnAYNRhwf39xR6WvZePd5pyVcx+rcfIeAja8YzDk1WX2d3Jsd1MCbhGa2BIpknUA24RqJ5IoAowv0EM8h2vHm480Pajys6I7+o9psVF0SXgbQ9+vdHSGTBaLaGwjWfn7604S/C0cBBcjGQgSGpdq4H+doT4oJIcbHBQvx andrew.lamb@ALAMB.local"
-
-  - name: renee.cooper
-    groups: [ wheel ]
-    sudo: [ "ALL=(ALL) NOPASSWD:ALL" ]
-    shell: /bin/bash
-    ssh-authorized-keys: 
-    - "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDH4d8xl63exPNTxOUsXlKMl5VqjQReIgu5nv5nbPWZn0X3LMNcNLjUFaaa1R8rKcjKyhYRZ59gylOgI+CJjrzHoJVqkA6m1U5dqrzbsDS0ig+vmG8QbIyXqMlznVMfBbnN33XlDukoT76XyDe7LdRXzw1NpJuAFoeq8vr1nEjNn2C0Hb6PQ1NdAVVdx4WWaPZut3e1MgMBu2eYqQzlz+lJdvrWre92WNgORlb0UhCpjnUplOdm+zyWj416Z9MJhx3iEb8m6mh4FizWwxtu3RHl+uino4Rc0Bozhsz4bdIw4f3POgOVqG+FyX7Smq8RLozM2eeLMjxJE8WPSiHQtvQ7 renee.cooper@RCOOPER-MBP.local"
-  
-  - name: vasuki.seshadri
-    groups: [ wheel ]
-    sudo: [ "ALL=(ALL) NOPASSWD:ALL" ]
-    shell: /bin/bash
-    ssh-authorized-keys: 
-    - "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDTCxrAzf5u5ebQyaIFqZ3+oYGjoWKWeaDIRewRThGrxKy1Z8ADf0WbByxZJhTw8v5QgrpgkOgr+YiOyEePhbbAh0WvaZMEYdDHIcT8DoPqEhtgSN1mEdUdeYG3ye5QMqRWX/B/L01iC23TrxxK9UVzYoVDDLD57TPOvuQrb85Gii+9KNv6kaZvOD2jPlIha0shDF6e628dNul1QAXN502efz3DOICkJNULpKZsZ6/GxMYJVucyB4NmKe5FKUXaF4A9tRulWbPGUcr6We9b4e2hZQkAufe3m2AClod5/I+OxC23zmR4n0lN8kTcR6oLm5r1O4SCqsJniVkOk0T1AOBF vasuki.seshadri@DREAMBOX-VASUKI.local"
