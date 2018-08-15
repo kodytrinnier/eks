@@ -5,16 +5,12 @@ metadata:
   namespace: kube-system
 data:
   mapUsers: |
-    - userarn: arn:aws:iam::001764686859:user/marc.wensauer
-      username: marc.wensauer
-      groups:
-        - "system:masters"
-    - userarn: arn:aws:iam::001764686859:user/todd.howson
-      username: todd.howson
+    - userarn: arn:aws:iam::XXXXXXXXXXXX:user/first.last
+      username: first.last
       groups:
         - "system:masters"
   mapRoles: |
-    - rolearn: arn:aws:iam::001764686859:role/Hackathon-WorkerNodes-NodeInstanceRole-65W6P0DSY3H6
+    - rolearn: arn:aws:iam::XXXXXXXX:role/Hackathon-WorkerNodes-NodeInstanceRole-65W6P0DSY3H6
       username: system:node:{{EC2PrivateDNSName}}
       groups:
         - "system:bootstrappers"
