@@ -1,0 +1,26 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: alb-ingress
+  namespace: default
+  annotations:
+    kubernetes.io/ingress.class: alb
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/subnets: subnet-7c334037,subnet-f495c38d,subnet-93b697c9
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/security-groups: sg-56b56125 #ALB Ingress sg
+    alb.ingress.kubernetes.io/tags: Environment=hackathon
+spec:
+  rules:
+    - http:
+        paths:
+          - path: /index.html
+            backend:
+              serviceName: guestbook
+              servicePort: 3000
+    - http:
+        paths:
+          - path: /
+            backend:
+              serviceName: echoserver
+              servicePort: 80

@@ -1,0 +1,49 @@
+Parameters:
+  OfficeIp:
+    Type: String
+    Default: 65.158.195.26/32
+    Description: Enter the CIDR for the office IP
+
+Resources:
+  ControlPlaneSecurityGroup:
+    Type: "AWS::EC2::SecurityGroup"
+    Properties:
+      VpcId: vpc-d85491a0
+      GroupName: eks-cluster-sg
+      GroupDescription: Allow Traffic from Office/VPN
+      SecurityGroupIngress:
+      - IpProtocol: -1
+        CidrIp: !Ref OfficeIp
+      SecurityGroupEgress:
+      - IpProtocol: -1
+        CidrIp: 0.0.0.0/0 
+
+  EksCluster:
+    Type: "AWS::EKS::Cluster"
+    Properties:
+      Name: "hackathon"
+      Version: "1.10"
+      RoleArn: "arn:aws:iam::001764686859:role/EKSServiceRole"
+      ResourcesVpcConfig:
+        SecurityGroupIds: [!GetAtt ControlPlaneSecurityGroup.GroupId]
+        SubnetIds: ["subnet-62364529", "subnet-3a683e43", "subnet-f7be9fad", "subnet-7c334037", "subnet-f495c38d", "subnet-93b697c9"]
+
+  IngressSecurityGroup:
+    Type: "AWS::EC2::SecurityGroup"
+    Properties:
+      VpcId: vpc-d85491a0
+      GroupName: alb-ingress-sg
+      GroupDescription: Allow Traffic from Office/VPN
+      SecurityGroupIngress:
+      - IpProtocol: -1
+        CidrIp: !Ref OfficeIp
+      SecurityGroupEgress:
+      - IpProtocol: -1
+        CidrIp: 0.0.0.0/0
+
+Outputs:
+  AlbIngressSecurityGroupId:
+    Description: "SecurityGroup Id for ALB Ingress"
+    Value: !GetAtt IngressSecurityGroup.GroupId
+    Export:
+      Name: alb-ingress-sg

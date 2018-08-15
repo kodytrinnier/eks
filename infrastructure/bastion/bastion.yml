@@ -1,0 +1,36 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: This template creates a bastion
+Parameters:
+  OfficeIp:
+    Type: String
+    Description: Enter the CIDR for the office IP
+Resources:
+  Ec2Instance:
+    Type: "AWS::EC2::Instance"
+    Properties:
+      ImageId: ami-a9d09ed1
+      InstanceType: t2.micro
+      KeyName: "hackathon-k8s"
+      NetworkInterfaces:
+        - AssociatePublicIpAddress: "true"
+          DeviceIndex: "0"
+          GroupSet:
+          - !Ref BastionSecurityGroup
+          SubnetId: subnet-7c334037
+      Tags:
+        - Key: Name
+          Value: HackathonK8s-Bastion
+  BastionSecurityGroup:
+    Type: "AWS::EC2::SecurityGroup"
+    Properties:
+      VpcId: vpc-d85491a0
+      GroupName: Bastion-SG
+      GroupDescription: Allow SSH from Office/VPN
+      SecurityGroupIngress:
+      - IpProtocol: tcp
+        FromPort: 22
+        ToPort: 22
+        CidrIp: !Ref OfficeIp
+      SecurityGroupEgress:
+      - IpProtocol: -1
+        CidrIp: 0.0.0.0/0

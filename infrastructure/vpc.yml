@@ -1,0 +1,271 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Launches a VPC with six subnets; three public, three private.
+Parameters:
+  Tier:
+    Type: String
+    Description: Tier deployed to
+  VPCCIDR:
+    Type: String
+    Description: CIDR block
+  KubernetesVPCBoolean:
+    Type: String
+    Description: Whether this VPC will host Kubernetes
+    AllowedValues:
+      - true
+      - false
+  PublicSubnetACIDR:
+    Type: String
+    Description: CIDR block
+  PrivateSubnetACIDR:
+    Type: String
+    Description: CIDR block
+  PublicSubnetBCIDR:
+    Type: String
+    Description: CIDR block
+  PrivateSubnetBCIDR:
+    Type: String
+    Description: CIDR block
+  PublicSubnetCCIDR:
+    Type: String
+    Description: CIDR block
+  PrivateSubnetCCIDR:
+    Type: String
+    Description: CIDR block
+Resources:
+  VPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: !Ref VPCCIDR
+      EnableDnsSupport: 'true'
+      EnableDnsHostnames: 'true'
+      Tags:
+        - Key: Name
+          Value: !Ref Tier
+  PublicSubnetA:
+    Type: "AWS::EC2::Subnet"
+    Properties:
+      AvailabilityZone: us-west-2a
+      CidrBlock: !Ref PublicSubnetACIDR
+      MapPublicIpOnLaunch: !Ref KubernetesVPCBoolean
+      Tags:
+        - Key: Name
+          Value:
+            Fn::Join: [ "", ["PublicSubnetA-",!Ref Tier]]
+      VpcId: !Ref VPC
+  PrivateSubnetA:
+    Type: "AWS::EC2::Subnet"
+    Properties:
+      AvailabilityZone: us-west-2a
+      CidrBlock: !Ref PrivateSubnetACIDR
+      MapPublicIpOnLaunch: false
+      Tags:
+        - Key: Name
+          Value:
+            Fn::Join: [ "", ["PrivateSubnetA-",!Ref Tier]]
+      VpcId: !Ref VPC
+  PublicSubnetB:
+    Type: "AWS::EC2::Subnet"
+    Properties:
+      AvailabilityZone: us-west-2b
+      CidrBlock: !Ref PublicSubnetBCIDR
+      MapPublicIpOnLaunch: !Ref KubernetesVPCBoolean
+      Tags:
+        - Key: Name
+          Value:
+            Fn::Join: [ "", ["PublicSubnetB-",!Ref Tier]]
+      VpcId: !Ref VPC
+  PrivateSubnetB:
+    Type: "AWS::EC2::Subnet"
+    Properties:
+      AvailabilityZone: us-west-2b
+      CidrBlock: !Ref PrivateSubnetBCIDR
+      MapPublicIpOnLaunch: false
+      Tags:
+        - Key: Name
+          Value:
+            Fn::Join: [ "", ["PrivateSubnetB-",!Ref Tier]]
+      VpcId: !Ref VPC
+  PublicSubnetC:
+    Type: "AWS::EC2::Subnet"
+    Properties:
+      AvailabilityZone: us-west-2c
+      CidrBlock: !Ref PublicSubnetCCIDR
+      MapPublicIpOnLaunch: !Ref KubernetesVPCBoolean
+      Tags:
+        - Key: Name
+          Value:
+            Fn::Join: [ "", ["PublicSubnetC-",!Ref Tier]]
+      VpcId: !Ref VPC
+  PrivateSubnetC:
+    Type: "AWS::EC2::Subnet"
+    Properties:
+      AvailabilityZone: us-west-2c
+      CidrBlock: !Ref PrivateSubnetCCIDR
+      MapPublicIpOnLaunch: false
+      Tags:
+        - Key: Name
+          Value:
+            Fn::Join: [ "", ["PrivateSubnetC-",!Ref Tier]]
+      VpcId: !Ref VPC
+  InternetGateway:
+    Type: "AWS::EC2::InternetGateway"
+    Properties:
+      Tags:
+      - Key: Name
+        Value:
+            Fn::Join: [ "", ["IGW",!Ref Tier]]
+  AttachIGW:
+    Type: "AWS::EC2::VPCGatewayAttachment"
+    Properties:
+      InternetGatewayId: !Ref InternetGateway
+      VpcId: !Ref VPC
+  NAT:
+    DependsOn: AttachIGW
+    Type: AWS::EC2::NatGateway
+    Properties:
+      AllocationId:
+        Fn::GetAtt:
+        - EIP
+        - AllocationId
+      SubnetId:
+        Ref: PublicSubnetA
+      Tags:
+        - Key: Tier
+          Value: Hackathon
+  EIP:
+    Type: AWS::EC2::EIP
+    Properties:
+      Domain: vpc
+  RouteA:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId:
+        Ref: PrivateRouteTableA
+      DestinationCidrBlock: 0.0.0.0/0
+      NatGatewayId:
+        Ref: NAT
+  RouteB:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId:
+        Ref: PrivateRouteTableB
+      DestinationCidrBlock: 0.0.0.0/0
+      NatGatewayId:
+        Ref: NAT
+  RouteC:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId:
+        Ref: PrivateRouteTableC
+      DestinationCidrBlock: 0.0.0.0/0
+      NatGatewayId:
+        Ref: NAT
+  PublicRouteTable:
+    Type: "AWS::EC2::RouteTable"
+    Properties:
+      VpcId: !Ref VPC
+      Tags:
+        - Key: Name
+          Value:
+            Fn::Join: [ "", ["PublicRouteTable",!Ref Tier]]
+  PrivateRouteTableA:
+    Type: "AWS::EC2::RouteTable"
+    Properties:
+      VpcId: !Ref VPC
+      Tags:
+        - Key: Name
+          Value:
+            Fn::Join: [ "", ["PrivateRouteTableA",!Ref Tier]]
+  PrivateRouteTableB:
+    Type: "AWS::EC2::RouteTable"
+    Properties:
+      VpcId: !Ref VPC
+      Tags:
+        - Key: Name
+          Value:
+            Fn::Join: [ "", ["PrivateRouteTableB",!Ref Tier]]
+  PrivateRouteTableC:
+    Type: "AWS::EC2::RouteTable"
+    Properties:
+      VpcId: !Ref VPC
+      Tags:
+        - Key: Name
+          Value:
+            Fn::Join: [ "", ["PrivateRouteTableC",!Ref Tier]]
+  IGWRoute:
+    Type: "AWS::EC2::Route"
+    Properties:
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref InternetGateway
+      RouteTableId: !Ref PublicRouteTable
+  PublicSubnetARouteTableAssociation:
+    Type: "AWS::EC2::SubnetRouteTableAssociation"
+    Properties:
+      RouteTableId: !Ref PublicRouteTable
+      SubnetId: !Ref PublicSubnetA
+  PrivateSubnetARouteTableAssociation:
+    Type: "AWS::EC2::SubnetRouteTableAssociation"
+    Properties:
+      RouteTableId: !Ref PrivateRouteTableA
+      SubnetId: !Ref PrivateSubnetA
+  PublicSubnetBRouteTableAssociation:
+    Type: "AWS::EC2::SubnetRouteTableAssociation"
+    Properties:
+      RouteTableId: !Ref PublicRouteTable
+      SubnetId: !Ref PublicSubnetB
+  PrivateSubnetBRouteTableAssociation:
+    Type: "AWS::EC2::SubnetRouteTableAssociation"
+    Properties:
+      RouteTableId: !Ref PrivateRouteTableB
+      SubnetId: !Ref PrivateSubnetB
+  PublicSubnetCRouteTableAssociation:
+    Type: "AWS::EC2::SubnetRouteTableAssociation"
+    Properties:
+      RouteTableId: !Ref PublicRouteTable
+      SubnetId: !Ref PublicSubnetC
+  PrivateSubnetCRouteTableAssociation:
+    Type: "AWS::EC2::SubnetRouteTableAssociation"
+    Properties:
+      RouteTableId: !Ref PrivateRouteTableC
+      SubnetId: !Ref PrivateSubnetC
+Outputs:
+  VPCOutput:
+    Value: !Ref VPC
+    Description: VPC ID
+    Export:
+      Name: !Join [ "",["VPCID", !Ref Tier]]
+  VPCCidr:
+    Value: !GetAtt VPC.CidrBlock
+    Description: VPC CIDR
+    Export:
+      Name: !Join [ "",["VPCCidr", !Ref Tier]]
+  PublicSubnetAOutput:
+    Value: !Ref PublicSubnetA
+    Description: Public Subnet A Output
+    Export:
+      Name: !Join [ "",["PublicSubnetA", !Ref Tier]]
+  PrivateSubnetAOutput:
+    Value: !Ref PrivateSubnetA
+    Description: Private Subnet A Output
+    Export:
+      Name: !Join [ "",["PrivateSubnetA", !Ref Tier]]
+  PublicSubnetBOutput:
+    Value: !Ref PublicSubnetB
+    Description: Public Subnet B Output
+    Export:
+      Name: !Join [ "",["PublicSubnetB", !Ref Tier]]
+  PrivateSubnetBOutput:
+    Value: !Ref PrivateSubnetB
+    Description: Private Subnet B Output
+    Export:
+      Name: !Join [ "",["PrivateSubnetB", !Ref Tier]]
+  PublicSubnetCOutput:
+    Value: !Ref PublicSubnetC
+    Description: Public Subnet C Output
+    Export:
+      Name: !Join [ "",["PublicSubnetC", !Ref Tier]]
+  PrivateSubnetCOutput:
+    Value: !Ref PrivateSubnetC
+    Description: Private Subnet C Output
+    Export:
+      Name: !Join [ "",["PrivateSubnetC", !Ref Tier]]
